@@ -46,11 +46,13 @@ public class DASMediationFlowObserver implements MessageFlowObserver,
     public void updateStatistics(PublishingFlow flow) {
         try {
             PrivilegedCarbonContext.startTenantFlow();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId,true);
+
+            // Using super tenant for all the publishing, data-bridge looks for thread-local tenantId
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(-1234, true);
 
             // No need to publish if there's no stream
             if (MessageFlowDataPublisherDataHolder.getInstance().getPublisherService().getStreamIds().size() > 0) {
-                StatisticsPublisher.process(flow);
+                StatisticsPublisher.process(flow, tenantId);
             }
         } catch (Exception e) {
             log.error("failed to update statics from DAS publisher", e);

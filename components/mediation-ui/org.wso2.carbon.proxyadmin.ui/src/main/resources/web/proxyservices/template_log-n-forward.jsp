@@ -23,6 +23,9 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="java.util.ResourceBundle" %>
 <%@ page import="org.wso2.carbon.proxyadmin.stub.types.carbon.ProxyData" %>
+<%@ page import="java.util.regex.Pattern" %>
+<%@ page import="org.owasp.encoder.Encode" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 
@@ -87,11 +90,12 @@
         String responseLogLevel = null;
 
         boolean submitted = "true".equals(request.getParameter("formSubmitted"));
+        Pattern proxyNameRegex = Pattern.compile("[~!@#$%^&*()\\\\\\/+=\\:;<>'\"?\\[\\]{}|\\s,]|^$");
         if (submitted) {
             try {
                 proxyName = request.getParameter("proxyName");
-                if (proxyName == null || "".equals(proxyName)) {
-                    throw new Exception("The proxy service name has not been specified");
+                if (proxyName == null || proxyNameRegex.matcher(proxyName).find()) {
+                    throw new Exception("The proxy service name is empty or contains invalid characters");
                 }
 
                 logLevel = request.getParameter("logLevel");
@@ -262,17 +266,17 @@
             if (proxyName != null) {
     %>
         <script type="text/javascript">
-            document.getElementById('proxy_name').value = '<%=proxyName%>';
+            document.getElementById('proxy_name').value = '<%=Encode.forJavaScriptBlock(proxyName)%>';
         </script>
     <%
             }
     %>
         <script type="text/javascript">
-            document.getElementById('log_level').value = '<%=logLevel%>';
+            document.getElementById('log_level').value = '<%=Encode.forJavaScriptBlock(logLevel)%>';
             if ('<%=logResponses%>' == 'true') {
                 document.getElementById('log_responses').checked = 'true';
                 enableLevelSelect();
-                document.getElementById('response_log_level').value = '<%=responseLogLevel%>';
+                document.getElementById('response_log_level').value = '<%=Encode.forJavaScriptBlock(responseLogLevel)%>';
             }
         </script>
     <%

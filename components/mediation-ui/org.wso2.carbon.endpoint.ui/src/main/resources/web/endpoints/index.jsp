@@ -26,6 +26,7 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="java.util.Collection" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 
@@ -212,7 +213,7 @@ function goBack(orginiator) {
 }
 
 function deleteEndpoint(endpointName) {
-    CARBON.showConfirmationDialog("<fmt:message key="do.you.want.to.delete.the.endpoint"/> " + endpointName + " ?", function() {
+    CARBON.showConfirmationDialog("<fmt:message key="do.you.want.to.delete.the.endpoint"/> " + escape(endpointName) + " ?", function() {
         $.ajax({
                    type: 'POST',
                    url: 'ajaxprocessors/deleteEndpoint-ajaxprocessor.jsp',
@@ -250,7 +251,7 @@ function loadEndpointsAfterDeletion() {
 }
 
 function deleteDynamicEndpoint(key) {
-    CARBON.showConfirmationDialog("<fmt:message key="do.you.want.to.delete.the.endpoint"/> " + key + "?", function () {
+    CARBON.showConfirmationDialog("<fmt:message key="do.you.want.to.delete.the.endpoint"/> " + escape(key) + "?", function () {
         jQuery.ajax({
             type: "POST",
             url: "ajaxprocessors/deleteDynamicEndpoint-ajaxprocessor.jsp",
@@ -528,7 +529,7 @@ function resetVars() {
                         <fmt:message key="search.endPoint"/>
                         <label>
                             <input type="text" name="sequenceSearchString"
-                                   value="<%= sequenceSearchString != null? sequenceSearchString : ""%>"/>
+                                   value="<%= sequenceSearchString != null? Encode.forHtml(sequenceSearchString) : ""%>"/>
                         </label>&nbsp;
                     </nobr>
                 </td>
@@ -605,7 +606,7 @@ function resetVars() {
         <tr>
             <td width="10px" style="text-align:center; !important">
                 <input type="checkbox" name="endpointGroups"
-                       value="<%=endpoint.getName()%>"
+                       value="<%= Encode.forHtmlAttribute(endpoint.getName()) %>"
                        onclick="resetVars()" class="chkBox"/>
                 &nbsp;
             </td>
@@ -613,21 +614,21 @@ function resetVars() {
                 <% if (endpoint.getArtifactContainerName() != null) { %>
                     <span href="#">
                         <img src="images/applications.gif">
-                        <%= endpoint.getName()%>
+                        <%= Encode.forHtmlContent(endpoint.getName())%>
                         <% if(endpoint.getIsEdited()) { %> <span style="color:grey"> ( Edited )</span><% } %>
                     </span>
                 <% } else { %>
-                    span href="#"><%= endpoint.getName()%></span>
+                    span href="#"><%= Encode.forHtmlContent(endpoint.getName())%></span>
                 <% } %>
                 <% } else { %>
                 <% if (endpoint.getArtifactContainerName() != null) { %>
                     <span href="#">
                         <img src="images/applications.gif">
-                            <%= endpoint.getName()%>
+                            <%= Encode.forHtmlContent(endpoint.getName())%>
                             <% if(endpoint.getIsEdited()) { %> <span style="color:grey"> ( Edited )</span><% } %>
                     </span>
                 <% } else { %>
-                    <span href="#"><%= endpoint.getName()%></span>
+                    <span href="#"><%= Encode.forHtmlContent(endpoint.getName())%></span>
                 <% } %>
                 <% } %>
 
@@ -637,32 +638,32 @@ function resetVars() {
                 <%
                     EndpointService ePService = client.getEndpointService(endpoint);
                 %>
-                <%=ePService.getDisplayName()%>
+                <%=Encode.forHtmlContent(ePService.getDisplayName())%>
             </td>
             <td style="border-right:none;border-left:none;width:100px">
                 <div class="inlineDiv">
                     <% if (endpoint.getSwitchOn()) { %>
-                    <div id="switchOff<%=endpoint.getName()%>">
-                        <a href="#" onclick="switchOff('<%= endpoint.getName() %>')"
+                    <div id="switchOff<%= Encode.forHtmlAttribute(endpoint.getName()) %>">
+                        <a href="#" onclick="switchOff('<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                            class="icon-link"
                            style="background-image:url(images/endpoint-on.gif);"><fmt:message
                                 key="switch.off"/></a>
                     </div>
-                    <div id="switchOn<%=endpoint.getName()%>" style="display:none;">
-                        <a href="#" onclick="switchOn('<%= endpoint.getName() %>')"
+                    <div id="switchOn<%= Encode.forHtmlAttribute(endpoint.getName()) %>" style="display:none;">
+                        <a href="#" onclick="switchOn('<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                            class="icon-link"
                            style="background-image:url(images/endpoint-off.gif);"><fmt:message
                                 key="switch.on"/></a>
                     </div>
                     <%} else {%>
-                    <div id="switchOff<%=endpoint.getName()%>" style="display:none;">
-                        <a href="#" onclick="switchOff('<%= endpoint.getName() %>')"
+                    <div id="switchOff<%= Encode.forHtmlAttribute(endpoint.getName()) %>" style="display:none;">
+                        <a href="#" onclick="switchOff('<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                            class="icon-link"
                            style="background-image:url(images/endpoint-on.gif);"><fmt:message
                                 key="switch.off"/></a>
                     </div>
-                    <div id="switchOn<%=endpoint.getName()%>" style="">
-                        <a href="#" onclick="switchOn('<%= endpoint.getName() %>')"
+                    <div id="switchOn<%= Encode.forHtmlAttribute(endpoint.getName()) %>" style="">
+                        <a href="#" onclick="switchOn('<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                            class="icon-link"
                            style="background-image:url(images/endpoint-off.gif);"><fmt:message
                                 key="switch.on"/></a>
@@ -671,14 +672,14 @@ function resetVars() {
                         if (ePService.isStatisticsAvailable()) {
                             if (endpoint.getEnableStatistics()) { %>
                     <td style="border-right:none;border-left:none;width:100px">
-                        <div id="disableStat<%= endpoint.getName()%>">
-                            <a href="#" onclick="disableStat('<%= endpoint.getName() %>')"
+                        <div id="disableStat<%= Encode.forHtmlAttribute(endpoint.getName()) %>">
+                            <a href="#" onclick="disableStat('<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                                class="icon-link"
                                style="background-image:url(../admin/images/static-icon.gif);"><fmt:message
                                     key="disable.statistics"/></a>
                         </div>
-                        <div id="enableStat<%= endpoint.getName()%>" style="display:none;">
-                            <a href="#" onclick="enableStat('<%= endpoint.getName() %>')"
+                        <div id="enableStat<%= Encode.forHtmlAttribute(endpoint.getName()) %>" style="display:none;">
+                            <a href="#" onclick="enableStat('<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                                class="icon-link"
                                style="background-image:url(../admin/images/static-icon-disabled.gif);"><fmt:message
                                     key="enable.statistics"/></a>
@@ -690,14 +691,14 @@ function resetVars() {
             } else { %>
             <td style="border-right:none;border-left:none;width:100px">
                 <div class="inlineDiv">
-                    <div id="enableStat<%= endpoint.getName()%>">
-                        <a href="#" onclick="enableStat('<%= endpoint.getName() %>')"
+                    <div id="enableStat<%= Encode.forHtmlAttribute(endpoint.getName()) %>">
+                        <a href="#" onclick="enableStat('<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                            class="icon-link"
                            style="background-image:url(../admin/images/static-icon-disabled.gif);"><fmt:message
                                 key="enable.statistics"/></a>
                     </div>
-                    <div id="disableStat<%= endpoint.getName()%>" style="display:none">
-                        <a href="#" onclick="disableStat('<%= endpoint.getName() %>')"
+                    <div id="disableStat<%= Encode.forHtmlAttribute(endpoint.getName()) %>" style="display:none">
+                        <a href="#" onclick="disableStat('<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                            class="icon-link"
                            style="background-image:url(../admin/images/static-icon.gif);"><fmt:message
                                 key="disable.statistics"/></a>
@@ -717,7 +718,7 @@ function resetVars() {
                     <div class="inlineDiv">
                         <a href="#"
                            class="icon-link"
-                           onclick="editCAppEndpoint('<%=ePService.getUIPageName()%>','<%= endpoint.getName() %>')"
+                           onclick="editCAppEndpoint('<%=ePService.getUIPageName()%>','<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                            style="background-image:url(../admin/images/edit.gif);"><fmt:message
                                 key="edit"/></a>
                     </div>
@@ -727,7 +728,7 @@ function resetVars() {
                     <div class="inlineDiv">
                         <a href="#"
                            class="icon-link"
-                           onclick="editEndpoint('<%=ePService.getUIPageName()%>','<%= endpoint.getName() %>')"
+                           onclick="editEndpoint('<%=ePService.getUIPageName()%>','<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                            style="background-image:url(../admin/images/edit.gif);"><fmt:message
                                 key="edit"/>
                         </a>
@@ -750,7 +751,7 @@ function resetVars() {
                 <td style="border-left:none;width:100px">
                     <div class="inlineDiv">
                         <a href="#"
-                           onclick="deleteEndpoint('<%= endpoint.getName() %>')"
+                           onclick="deleteEndpoint('<%= Encode.forJavaScriptAttribute(endpoint.getName()) %>')"
                            class="icon-link"
                            style="background-image:url(../admin/images/delete.gif);"><fmt:message
                                 key="delete"/></a>
@@ -847,7 +848,7 @@ function resetVars() {
                 <%  //String epXML = client.getDynamicEndpoint(endpoint);
                     EndpointService epService = client.getEndpointService(epXML);
                 %>
-                <%=epService.getDisplayName()%>
+                <%=Encode.forHtmlContent(epService.getDisplayName())%>
             </td>
             <td class="registryWriteOperation" style="border-right:none;width:100px">
                 <div class="inlineDiv">
@@ -907,7 +908,7 @@ function resetVars() {
                 <a class="icon-link"
                    href="<%=endpointService.getUIPageName()%>Endpoint.jsp?<%=fullQueryString%>"
                    style="background-image: url(../admin/images/add.gif);">
-                    <%=endpointService.getDisplayName()%> Template
+                    <%=Encode.forHtmlContent(endpointService.getDisplayName())%> Template
                 </a>
             </td>
             <td>
@@ -920,7 +921,7 @@ function resetVars() {
                 <a class="icon-link"
                    href="<%=endpointService.getUIPageName()%>Endpoint.jsp?<%=fullQueryString%>"
                    style="background-image: url(../admin/images/add.gif);">
-                    <%=endpointService.getDisplayName() %>
+                    <%=Encode.forHtmlContent(endpointService.getDisplayName()) %>
                 </a>
             </td>
             <td>

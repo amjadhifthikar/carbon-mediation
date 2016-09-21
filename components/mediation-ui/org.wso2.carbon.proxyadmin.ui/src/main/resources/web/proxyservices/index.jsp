@@ -31,6 +31,7 @@
 <%@ page import="org.wso2.carbon.proxyadmin.stub.types.carbon.Entry" %>
 <%@ page import="org.wso2.carbon.proxyadmin.stub.types.carbon.ProxyServicePolicyInfo" %>
 <%@ page import="org.wso2.carbon.proxyadmin.ui.client.ProxyAdminClientUtils" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <jsp:include page="../dialog/display_messages.jsp"/>
@@ -306,6 +307,7 @@
 
 	givenParams = givenParams.replaceAll("\\\\", "\\\\\\\\");
 	givenParams = givenParams.replaceAll("'","\\\\'");
+    givenParams = givenParams.replaceAll(" xmlns=\"http://ws.apache.org/ns/synapse\"","");
 	
     // sets pinned servers
     String pinnedServers = "";
@@ -558,9 +560,10 @@
     function validatePage(num) {
         var elem;
         var isOneSpecified = false;
+        var proxyNameRegex = /[~!@#$%^&*()\\\/+=\:;<>'"?[\]{}|\s,]|^$/;
 
-        if ((elem = getElement('psName')).value == null || elem.value == '') {
-            return 'Empty proxy service name';
+        if ((elem = getElement('psName')).value == null || proxyNameRegex.test(elem.value)) {
+            return 'Proxy service name is empty or contains invalid characters';
         }
         if (num == 0) {
             var wsdl = getElement('publishWsdlCombo');
@@ -669,7 +672,7 @@
         if ((result = validatePage(2)) == 'successful') {
             populateServiceParams();
             populateWsdlResources();
-            document.designForm.action = "designToData.jsp?submit=<%=saveOrModify%>&anonEpAction=" + anonEpAction + "&header=<%=header%>&forwardTo=../service-mgt/index.jsp&pageNum=" + pageNum + "&originator=index.jsp&anonInAction" + anonInAction + "&anonOutAction=" + anonOutAction + "&anonFaultAction=" + anonFaultAction;
+            document.designForm.action = "designToData.jsp?submit=<%=saveOrModify%>&anonEpAction=" + anonEpAction + "&header=<%=Encode.forJavaScriptBlock(header)%>&forwardTo=../service-mgt/index.jsp&pageNum=" + pageNum + "&originator=index.jsp&anonInAction" + anonInAction + "&anonOutAction=" + anonOutAction + "&anonFaultAction=" + anonFaultAction;
             document.designForm.submit();
         } else {
             CARBON.showErrorDialog(result);
@@ -683,7 +686,7 @@
     function sourceView() {
         populateServiceParams();
         populateWsdlResources();
-        document.designForm.action = "designToData.jsp?return=source.jsp&header=<%=header%>&anonEpAction=" + anonEpAction + "&pageNum=" + pageNum + "&originator=index.jsp&anonInAction" + anonInAction + "&anonOutAction=" + anonOutAction + "&anonFaultAction=" + anonFaultAction;
+        document.designForm.action = "designToData.jsp?return=source.jsp&header=<%=Encode.forJavaScriptBlock(header)%>&anonEpAction=" + anonEpAction + "&pageNum=" + pageNum + "&originator=index.jsp&anonInAction" + anonInAction + "&anonOutAction=" + anonOutAction + "&anonFaultAction=" + anonFaultAction;
         document.designForm.submit();
     }
 
@@ -750,7 +753,7 @@
     function  anonEpAddEdit() {
         populateServiceParams();
         populateWsdlResources();
-        document.designForm.action = "designToData.jsp?return=anonEpHandler.jsp&header=<%=header%>&anonEpAction=" + anonEpAction + "&pageNum=" + pageNum + "&originator=index.jsp&anonInAction" + anonInAction + "&anonOutAction=" + anonOutAction + "&anonFaultAction=" + anonFaultAction;
+        document.designForm.action = "designToData.jsp?return=anonEpHandler.jsp&header=<%=Encode.forJavaScriptBlock(header)%>&anonEpAction=" + anonEpAction + "&pageNum=" + pageNum + "&originator=index.jsp&anonInAction" + anonInAction + "&anonOutAction=" + anonOutAction + "&anonFaultAction=" + anonFaultAction;
         document.designForm.submit();
     }
 
@@ -815,7 +818,7 @@
     function anonSeqAddEdit(sequence) {
         populateServiceParams();
         populateWsdlResources();
-        document.designForm.action = "designToData.jsp?return=anonSequenceHandler.jsp&anonEpAction=" + anonEpAction + "&header=<%=header%>&pageNum=" + pageNum + "&originator=index.jsp&sequence=" + sequence + "&anonInAction" + anonInAction + "&anonOutAction=" + anonOutAction + "&anonFaultAction=" + anonFaultAction;
+        document.designForm.action = "designToData.jsp?return=anonSequenceHandler.jsp&anonEpAction=" + anonEpAction + "&header=<%=Encode.forJavaScriptBlock(header)%>&pageNum=" + pageNum + "&originator=index.jsp&sequence=" + sequence + "&anonInAction" + anonInAction + "&anonOutAction=" + anonOutAction + "&anonFaultAction=" + anonFaultAction;
         document.designForm.submit();
     }
 
@@ -1106,7 +1109,7 @@
 </script>
 
 <div id="middle"  <%=switchimmed ? "style=visibility: hidden" : ""%>>
-<h2><%=header%> Proxy Service</h2>
+<h2><%=Encode.forHtmlContent(header)%> Proxy Service</h2>
 
 <div id="workArea">
 <link type="text/css" rel="stylesheet" href="../proxyservices/css/proxyservices.css"/>
@@ -1146,19 +1149,19 @@
         </div>
         <div id="step1">
             <h2><fmt:message key="proxy.service.page1"/></h2>
-            <strong><fmt:message key="proxy.service.name"/>: <span id="proxyServiceName1"><%=name%></span></strong>
+            <strong><fmt:message key="proxy.service.name"/>: <span id="proxyServiceName1"><%=Encode.forHtmlContent(name)%></span></strong>
             <p>
                 <fmt:message key="proxy.service.page1.desc"/>
             </p>
         </div>
         <div id="step2">
             <h2><fmt:message key="proxy.service.page2"/></h2>
-            <strong><fmt:message key="proxy.service.name"/>: <span id="proxyServiceName2"><%=name%></span></strong>
+            <strong><fmt:message key="proxy.service.name"/>: <span id="proxyServiceName2"><%=Encode.forHtmlContent(name)%></span></strong>
             <p>
                 <fmt:message key="proxy.service.page2.desc"/>
             </p>
         </div>
-        <input id="psName" name="psName" type="hidden" value="<%=name%>">
+        <input id="psName" name="psName" type="hidden" value="<%=Encode.forHtmlAttribute(name)%>">
         <input name="proxy.secured" type="hidden" value="<%=securityEnabled%>"/>
         <input name="proxy.policies" type="hidden" value="<%=policyKeys%>" />
     </td>

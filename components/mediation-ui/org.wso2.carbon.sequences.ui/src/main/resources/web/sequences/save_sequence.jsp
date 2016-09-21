@@ -27,6 +27,9 @@
 <%@ page import="javax.xml.namespace.QName" %>
 <%@ page import="java.util.ResourceBundle" %>
 <%@ page import="org.wso2.carbon.sequences.ui.client.EditorUIClient" %>
+<%@ page import="org.owasp.encoder.Encode" %>
+<%@ page import="org.apache.axis2.util.XMLUtils" %>
+<%@ page import="java.io.ByteArrayInputStream" %>
 
 <%
     if (session.getAttribute("sequence.error.message") != null) {
@@ -169,7 +172,7 @@
 %>
 
 <script type="text/javascript">
-    window.location.href = "<%=forwardTo%>";
+    window.location.href = "<%=Encode.forJavaScriptBlock(forwardTo)%>";
 </script>
 
 <%

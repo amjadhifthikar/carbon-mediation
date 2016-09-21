@@ -24,6 +24,8 @@
 <%@ page import="java.util.ResourceBundle" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.proxyadmin.stub.types.carbon.ProxyData" %>
+<%@ page import="java.util.regex.Pattern" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 
@@ -164,12 +166,13 @@
         boolean publishSame = false;
 
         boolean submitted = "true".equals(request.getParameter("formSubmitted"));
+        Pattern proxyNameRegex = Pattern.compile("[~!@#$%^&*()\\\\\\/+=\\:;<>'\"?\\[\\]{}|\\s,]|^$");
 
         if (submitted) {
             try {
                 proxyName = request.getParameter("proxyName");
-                if (proxyName == null || "".equals(proxyName)) {
-                    throw new Exception("The proxy service name has not been specified");
+                if (proxyName == null || proxyNameRegex.matcher(proxyName).find()) {
+                    throw new Exception("The proxy service name is empty or contains invalid characters");
                 }
 
                 wsdlURL = request.getParameter("mainWsdlURL");
@@ -325,7 +328,7 @@
             if (proxyName != null) {
     %>
         <script type="text/javascript">
-            document.getElementById('proxy_name').value = '<%=proxyName%>';
+            document.getElementById('proxy_name').value = '<%=Encode.forJavaScriptBlock(proxyName)%>';
         </script>
     <%
             }
@@ -333,7 +336,7 @@
             if (wsdlURL != null) {
     %>
         <script type="text/javascript">
-            document.getElementById('main_wsdl_url').value = '<%=wsdlURL%>';
+            document.getElementById('main_wsdl_url').value = '<%=Encode.forJavaScriptBlock(wsdlURL)%>';
         </script>
     <%
             }
@@ -341,7 +344,7 @@
             if (wsdlPort != null) {
     %>
         <script type="text/javascript">
-            document.getElementById('wsdl_port').value = '<%=wsdlPort%>';
+            document.getElementById('wsdl_port').value = '<%=Encode.forJavaScriptBlock(wsdlPort)%>';
         </script>
     <%
             }
@@ -349,7 +352,7 @@
             if (wsdlService != null) {
     %>
         <script type="text/javascript">
-            document.getElementById('wsdl_service').value = '<%=wsdlService%>';
+            document.getElementById('wsdl_service').value = '<%=Encode.forJavaScriptBlock(wsdlService)%>';
         </script>
     <%
             }

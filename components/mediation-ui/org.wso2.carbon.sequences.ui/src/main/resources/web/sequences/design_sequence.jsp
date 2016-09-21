@@ -31,6 +31,7 @@
 <%@ page import="org.wso2.carbon.sequences.ui.client.EditorUIClient" %>
 <%@ page import="org.wso2.carbon.mediation.service.templates.TemplateMediator" %>
 <%@ page import="java.util.Iterator" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 
@@ -206,7 +207,7 @@
     }
 
     function showHideName() {
-        if ('<%=SequenceEditorHelper.getEditingSequenceAction(session)%>' == 'anonify') {
+        if ('<%=Encode.forJavaScriptBlock(SequenceEditorHelper.getEditingSequenceAction(session))%>' == 'anonify') {
             document.getElementById('sequenceNameSection').style.display ="none";
         }
     }
@@ -331,7 +332,8 @@
     }
 
     function onUpdSuccess() {
-        if ('<%=SequenceEditorHelper.getEditingSequenceAction(session)%>' == 'anonify') {
+        var regEx = /[~!@#$%^&*()\\\/+=\:;<>'"?[\]{}|\s,]|^$/;
+        if ('<%=Encode.forJavaScriptBlock(SequenceEditorHelper.getEditingSequenceAction(session))%>' == 'anonify') {
             var seqName = document.getElementById("sequence.name").value;
             var onErrorKey = document.getElementById("sequence.onerror.key").value;
             var seqDescription = document.getElementById("seqeunceDescription").value;
@@ -348,7 +350,7 @@
             var seqName = document.getElementById("sequence.name").value;
             var onErrorKey = document.getElementById("sequence.onerror.key").value;
             var seqDescription = document.getElementById("seqeunceDescription").value;
-            if (seqName == "") {
+            if (regEx.test(seqName)) {
                 CARBON.showWarningDialog('<fmt:message key="sequence.name.required"/>');
                 return;
             }
@@ -361,7 +363,7 @@
 
     function saveSequenceAs() {
 
-        if ('<%=SequenceEditorHelper.getEditingSequenceAction(session)%>' == 'anonify') {
+        if ('<%=Encode.forJavaScriptBlock(SequenceEditorHelper.getEditingSequenceAction(session))%>' == 'anonify') {
             CARBON.showErrorDialog('Unable to save the sequence to the synapse registry in current mode');
             return false;
         }
@@ -427,13 +429,14 @@
     }
 
     function onUpdateSucess() {
-        if ('<%=SequenceEditorHelper.getEditingSequenceAction(session)%>' == 'anonify') {
+        var regEx = /[~!@#$%^&*()\\\/+=\:;<>'"?[\]{}|\s,]|^$/;
+        if ('<%=Encode.forJavaScriptBlock(SequenceEditorHelper.getEditingSequenceAction(session))%>' == 'anonify') {
             document.location.href = "save_sequence.jsp?sequence=<%=seq%>&forwardTo=design_sequence.jsp";
         } else {
             var seqName = document.getElementById("sequence.name").value;
             var onErrorKey = document.getElementById("sequence.onerror.key").value;
             var seqDescription = document.getElementById("seqeunceDescription").value;
-            if (seqName == "") {
+            if (regEx.test(seqName)) {
                 CARBON.showWarningDialog('<fmt:message key="sequence.name.required"/>');
                 return;
             }
