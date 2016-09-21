@@ -962,7 +962,7 @@ public class SynapseAppDeployer implements AppDeploymentHandler {
     public void setCustomLogContent (Deployer deployer, CarbonApplication carbonApp) {
         if ((deployer instanceof AbstractSynapseArtifactDeployer)) {
             if (carbonApp != null) {
-                ((AbstractSynapseArtifactDeployer) deployer).setCustomLog(carbonApp.getAppName(),
+                ((AbstractSynapseArtifactDeployer) deployer).setCustomLog(carbonApp.getAppNameWithVersion(),
                         AppDeployerUtils.getTenantIdLogString(AppDeployerUtils.getTenantId()));
             } else {
                 ((AbstractSynapseArtifactDeployer) deployer).setCustomLog(null, null);
